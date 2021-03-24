@@ -29,12 +29,31 @@ def avg_suv_price():
 
 def avg_truck_pickup():
     df_veh = pd.read_csv('vehicles.csv', usecols=['price','type'])
+    # Get Type and Price Columns.
     df_veh['price'].replace(0, np.nan, inplace=True)
     df_veh.dropna(subset=['price'], inplace=True)
+    # Get trucks and pickups
+    df_p = df_veh.loc[df_veh['type']=='pickup']
+    df_t = df_veh.loc[df_veh['type']=='truck']
+    # Combine trucks and pickups together.
+    df_pt = pd.concat([df_p, df_t])
+    # Convert to float
+    df_pt['price'] = pd.to_numeric(df_pt['price'])
+    print(df_pt.price.mean())
 
 
-    print(df_veh)
-
-
-
-avg_truck_pickup()
+def fuel_veh_manu():
+    df_veh = pd.read_csv('vehicles.csv', usecols=['manufacturer','fuel'])
+    # Remove blanks NaN and some other errors in the fuel column.
+    df_veh['manufacturer'].replace(' ', np.nan, inplace=True)
+    df_veh['fuel'].replace(' ', np.nan, inplace=True)
+    df_veh['fuel'].replace(' 1-Series', np.nan, inplace=True)
+    df_veh['fuel'].replace(' BMW', np.nan, inplace=True)
+    df_veh['fuel'].replace(' Ml Class', np.nan, inplace=True)
+     
+    df_veh.dropna(subset=['manufacturer'], inplace=True)
+    df_veh.dropna(subset=['fuel'], inplace=True)
+    # 
+    print(df_veh.groupby(['manufacturer','fuel'])['fuel'].count())
+    
+fuel_veh_manu()
